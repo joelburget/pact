@@ -22,13 +22,16 @@
 module Pact.Repl
     (
      interactiveRepl,generalRepl
-    ,evalRepl,ReplMode(..)
+    ,evalRepl, evalRepl',ReplMode(..)
     ,execScript,execScript'
     ,initEvalEnv,initPureEvalEnv,initReplState
     ,handleParse,handleCompile
     ,isPactFile
     ,evalString
     ,ReplState(..),rEnv,rEvalState,rMode,rOut
+
+    , parseRepl
+    , _testAccounts
     ) where
 
 import Control.Applicative
@@ -435,6 +438,9 @@ evalRepl' cmd = useReplLib >> parsedCompileEval cmd (TF.parseString exprsOnly me
 
 evalRepl :: ReplMode -> String -> IO (Either String (Term Name))
 evalRepl m cmd = initReplState m >>= evalStateT (evalRepl' cmd)
+
+parseRepl :: String -> TF.Result [Exp]
+parseRepl cmd = TF.parseString exprsOnly mempty cmd
 
 evalString :: Bool -> String -> IO Value
 evalString showLog cmd = do
